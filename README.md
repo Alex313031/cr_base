@@ -7,7 +7,7 @@
 # mini_chromium
 
 This is mini_chromium, a small collection of useful low-level (“base”) routines
-from the [Chromium open-source project](https://dev.chromium.org/Home). Chromium
+from the [Chromium open-source project](https://www.chromium.org/Home/). Chromium
 is large, sprawling, full of dependencies, and a web browser. mini_chromium is
 small, self-contained, and a library. mini_chromium is especially useful as a
 dependency of other code that wishes to use Chromium’s base routines. By using
@@ -31,7 +31,7 @@ methods, or types that the Chromium equivalent does. The differences noted above
 notwithstanding, the interfaces exposed by mini_chromium’s base are and must
 remain a strict subset of Chromium’s.
 
-[Crashpad](https://crashpad.chromium.org/) is the chief consumer of
+[Crashpad](https://chromium.googlesource.com/crashpad/crashpad/+/main/README.md) is the chief consumer of
 mini_chromium.
 
 Mark Mentovai<br/>

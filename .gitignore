@@ -10,8 +10,16 @@
 *~
 .*.sw?
 .DS_Store
+.directory
+Thumbs.db
 .gdb_history
 .gdbinit
+*.vcxproj.user
+*.tlog
+*.obj
+*.stamp
 /Makefile
 /out
 /xcodebuild
+/.vs/
+

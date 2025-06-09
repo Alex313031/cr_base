@@ -1,4 +1,5 @@
-// Copyright 2006-2008 The Chromium Authors
+// Copyright 2024-2025 Alex313031
+// Copyright 2006-2024 The Chromium Authors
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
