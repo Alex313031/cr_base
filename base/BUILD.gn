@@ -23,6 +23,10 @@ static_library("base") {
     "files/scoped_file.cc",
     "files/scoped_file.h",
     "format_macros.h",
+    "hash/city.cc",
+    "hash/city.h",
+    "hash/hash.cc",
+    "hash/hash.h",
     "immediate_crash.h",
     "logging.cc",
     "logging.h",
@@ -156,6 +160,8 @@ static_library("base") {
 
   public_configs = [ "../build:mini_chromium_config" ]
 
+  deps = [ ":superfasthash" ]
+
   public_deps = [ "../build" ]
 
   if (mini_chromium_is_apple) {
@@ -165,4 +171,9 @@ static_library("base") {
   if (mini_chromium_is_android) {
     libs = [ "log" ]
   }
+}
+
+source_set("superfasthash") {
+  sources = [ "hash/superfasthash.c" ]
+  visibility = [ ":base" ]
 }
