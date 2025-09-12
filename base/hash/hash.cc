@@ -7,17 +7,11 @@
 #include <string_view>
 
 #include "base/check_op.h"
-#include "base/hash/city.h"
+#include "base/hash/cityhash.h"
+#include "base/hash/superfasthash.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
-
-// Definition in base/third_party/superfasthash/superfasthash.c. (Third-party
-// code did not come with its own header file, so declaring the function here.)
-// Note: This algorithm is also in Blink under Source/wtf/StringHasher.h.
-extern "C" {
-  uint32_t SuperFastHash(const char* data, int len);
-}
 
 namespace base {
 
@@ -145,8 +139,8 @@ uint32_t PersistentHash(span<const uint8_t> data) {
     NOTREACHED();
     return 0;
   }
-  return ::SuperFastHash(reinterpret_cast<const char*>(data.data()),
-                         static_cast<int>(data.size()));
+  return SuperFastHash(reinterpret_cast<const char*>(data.data()),
+                       static_cast<int>(data.size()));
 }
 
 uint32_t PersistentHash(const void* data, size_t length) {

@@ -27,7 +27,7 @@
 // possible hash functions, by using SIMD instructions, or by
 // compromising on hash quality.
 
-#include "city.h"
+#include "cityhash.h"
 
 #include <string.h>  // for memcpy and memset
 #include <algorithm>
@@ -85,7 +85,7 @@ using std::pair;
 #else
 
 // XXX(cavalcanti): building 'native_client' fails with this header.
-//#include <byteswap.h>
+#include <byteswap.h>
 
 // Falling back to compiler builtins instead.
 #define bswap_32(x) __builtin_bswap32(x)

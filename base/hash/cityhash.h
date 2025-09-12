@@ -59,8 +59,8 @@
 // of a+b is easily derived from the hashes of a and b.  This property
 // doesn't hold for any hash functions in this file.
 
-#ifndef BASE_THIRD_PARTY_CITYHASH_CITY_H_
-#define BASE_THIRD_PARTY_CITYHASH_CITY_H_
+#ifndef BASE_HASH_CITYHASH_H_
+#define BASE_HASH_CITYHASH_H_
 
 #include <stdint.h>
 #include <stdlib.h>  // for size_t.
@@ -126,4 +126,4 @@ inline uint64 Hash128to64(const uint128& x) {
 }  // namespace internal
 }  // namespace base
 
-#endif  // CITY_HASH_H_
+#endif  // BASE_HASH_CITYHASH_H_
