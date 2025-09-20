@@ -40,11 +40,30 @@ enum : LoggingDestination {
 #endif
 };
 
+// Settings to store logging destination and output formatting.
+//
 struct LoggingSettings {
   LoggingDestination logging_dest = LOG_DEFAULT;
+  bool process_info = true;
+  bool time_info = true;
+  bool source_info = true;
 };
 
-// Sets the logging destination.
+// For below bool functions
+extern bool show_process_info_;
+extern bool show_time_info_;
+extern bool show_source_info__;
+
+// Whether to show process information before the log message.
+bool ShouldShowProcessInfo();
+
+// Whether to show timing information before the log message.
+bool ShouldShowTimeInfo();
+
+// Whether to show file/source/line number info before the log message.
+bool ShouldShowSourceInfo();
+
+// Sets the logging destination and initializes logging.
 //
 // TODO(jperaza): LOG_TO_FILE is not yet supported.
 bool InitLogging(const LoggingSettings& settings);

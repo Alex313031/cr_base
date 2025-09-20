@@ -7,6 +7,13 @@
 
 #include <stdint.h>
 
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#include <ntstatus.h>
+#endif  // BUILDFLAG(IS_WIN)
+
 #include <string>
 
 namespace base {
@@ -18,6 +25,10 @@ int RandInt(int min, int max);
 uint64_t RandGenerator(uint64_t range);
 
 double RandDouble();
+
+extern "C" {
+bool RtlGenRandomNt5(PVOID RandomBuffer, ULONG RandomBufferLength);
+}
 
 void RandBytes(void* output, size_t output_length);
 std::string RandBytesAsString(size_t length);

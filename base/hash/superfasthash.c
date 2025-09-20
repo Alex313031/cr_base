@@ -25,15 +25,15 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-#include <stdint.h>
+#include "pstdint.h"
 #include <stdlib.h>
 
 #define get16bits(d) ((((uint32_t)(((const uint8_t *)(d))[1])) << 8)\
                        +(uint32_t)(((const uint8_t *)(d))[0]) )
 
 uint32_t SuperFastHash (const char * data, int len) {
-uint32_t hash = (uint32_t)len, tmp;
-int rem;
+    uint32_t hash = (uint32_t)len, tmp;
+    int rem;
 
     if (len <= 0 || data == NULL) return 0;
 

@@ -21,14 +21,17 @@
 #elif BUILDFLAG(IS_POSIX)
 #include "base/posix/eintr_wrapper.h"
 #elif BUILDFLAG(IS_WIN)
-#include <windows.h>
 
 // #define needed to link in RtlGenRandom(), a.k.a. SystemFunction036.  See the
 // "Community Additions" comment on MSDN here:
 // http://msdn.microsoft.com/en-us/library/windows/desktop/aa387694.aspx
+#if _WIN32_WINNT > 0x0500
 #define SystemFunction036 NTAPI SystemFunction036
 #include <NTSecAPI.h>
 #undef SystemFunction036
+#else
+#include <bcrypt.h>
+#endif
 
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -104,6 +107,23 @@ double RandDouble() {
   return result;
 }
 
+// Replacement for RtlGenRandom (SystemFunction036)
+bool RtlGenRandomNt5(PVOID RandomBuffer, ULONG RandomBufferLength) {
+  if (RandomBuffer == nullptr || RandomBufferLength == 0) {
+    return false;
+  }
+
+  // Function that Windows 2000 is capable of :)
+  NTSTATUS status = BCryptGenRandom(
+      nullptr,                            // default RNG provider
+      static_cast<PUCHAR>(RandomBuffer),  // buffer
+      RandomBufferLength,                 // length in bytes
+      BCRYPT_USE_SYSTEM_PREFERRED_RNG     // system-preferred RNG
+  );
+
+  return status == STATUS_SUCCESS ? true : false;
+}
+
 void RandBytes(void* output, size_t output_length) {
   if (output_length == 0) {
     return;
@@ -121,7 +141,11 @@ void RandBytes(void* output, size_t output_length) {
     const ULONG output_bytes_this_pass = static_cast<ULONG>(std::min(
         output_length, static_cast<size_t>(std::numeric_limits<ULONG>::max())));
     const bool success =
+#if _WIN32_WINNT > 0x0500
         RtlGenRandom(output_ptr, output_bytes_this_pass) != FALSE;
+#else
+        RtlGenRandomNt5(output_ptr, output_bytes_this_pass) != FALSE;
+#endif
     CHECK(success);
     output_length -= output_bytes_this_pass;
     output_ptr += output_bytes_this_pass;

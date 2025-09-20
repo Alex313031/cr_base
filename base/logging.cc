@@ -77,11 +77,36 @@ LoggingDestination g_logging_destination = LOG_DEFAULT;
 
 }  // namespace
 
+bool show_process_info_;
+bool show_time_info_;
+bool show_source_info_;
+
+bool ShouldShowProcessInfo() {
+  return show_process_info_;
+}
+
+bool ShouldShowTimeInfoPrefix() {
+  return show_time_info_;
+}
+
+bool ShouldShowSourceInfo() {
+  return show_source_info_;
+}
+
 bool InitLogging(const LoggingSettings& settings) {
   DCHECK_EQ(settings.logging_dest & LOG_TO_FILE, 0u);
 
   g_logging_destination = settings.logging_dest;
-  return true;
+
+  show_process_info_ = settings.process_info;
+  show_time_info_ = settings.time_info;
+  show_source_info_ = settings.source_info;
+
+  if (settings.logging_dest) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 void SetLogMessageHandler(LogMessageHandlerFunction log_message_handler) {
@@ -411,45 +436,51 @@ void LogMessage::Init(const char* function) {
   // On Fuchsia, the platform is responsible for adding the process id and
   // thread id, not the process itself.
 #if !BUILDFLAG(IS_FUCHSIA)
-  stream_ << '['
-          << pid
-          << ':'
-          << thread
-          << ':'
-          << std::setfill('0');
+  if (!ShouldShowProcessInfo()) {
+    stream_ << '[' << std::setfill('0');
+  } else {
+    stream_ << '['
+            << pid
+            << ':'
+            << thread
+            << ':'
+            << std::setfill('0');
+  }
 #endif
 
-  // On Fuchsia, the platform is responsible for adding the log timestamp,
-  // not the process itself.
+  if (ShouldShowTimeInfoPrefix()) {
+    // On Fuchsia, the platform is responsible for adding the log timestamp,
+    // not the process itself.
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_FUCHSIA)
-  timeval tv;
-  gettimeofday(&tv, nullptr);
-  tm local_time;
-  localtime_r(&tv.tv_sec, &local_time);
-  stream_ << std::setw(4) << local_time.tm_year + 1900
-          << std::setw(2) << local_time.tm_mon + 1
-          << std::setw(2) << local_time.tm_mday
-          << ','
-          << std::setw(2) << local_time.tm_hour
-          << std::setw(2) << local_time.tm_min
-          << std::setw(2) << local_time.tm_sec
-          << '.'
-          << std::setw(6) << tv.tv_usec
-          << ':';
+    timeval tv;
+    gettimeofday(&tv, nullptr);
+    tm local_time;
+    localtime_r(&tv.tv_sec, &local_time);
+    stream_ << std::setw(4) << local_time.tm_year + 1900
+            << std::setw(2) << local_time.tm_mon + 1
+            << std::setw(2) << local_time.tm_mday
+            << ','
+            << std::setw(2) << local_time.tm_hour
+            << std::setw(2) << local_time.tm_min
+            << std::setw(2) << local_time.tm_sec
+            << '.'
+            << std::setw(6) << tv.tv_usec
+            << ':';
 #elif BUILDFLAG(IS_WIN)
-  SYSTEMTIME local_time;
-  GetLocalTime(&local_time);
-  stream_ << std::setw(4) << local_time.wYear
-          << std::setw(2) << local_time.wMonth
-          << std::setw(2) << local_time.wDay
-          << ','
-          << std::setw(2) << local_time.wHour
-          << std::setw(2) << local_time.wMinute
-          << std::setw(2) << local_time.wSecond
-          << '.'
-          << std::setw(3) << local_time.wMilliseconds
-          << ':';
+    SYSTEMTIME local_time;
+    GetLocalTime(&local_time);
+    stream_ << std::setw(4) << local_time.wYear
+            << std::setw(2) << local_time.wMonth
+            << std::setw(2) << local_time.wDay
+            << ','
+            << std::setw(2) << local_time.wHour
+            << std::setw(2) << local_time.wMinute
+            << std::setw(2) << local_time.wSecond
+            << '.'
+            << std::setw(3) << local_time.wMilliseconds
+            << ':';
 #endif
+  }
 
   // On Fuchsia, ~LogMessage() will add the severity, filename and line
   // number when LOG_TO_SYSTEM_DEBUG_LOG is enabled, but not on
@@ -464,11 +495,15 @@ void LogMessage::Init(const char* function) {
       stream_ << "VERBOSE" << -severity_;
     }
 
-    stream_ << ' '
-            << file_name
-            << ':'
-            << line_
-            << "] ";
+    if (!ShouldShowSourceInfo()) {
+      stream_ << "] ";
+    } else {
+      stream_ << ' '
+              << file_name
+              << ':'
+              << line_
+              << "] ";
+    }
 #if BUILDFLAG(IS_FUCHSIA)
   }
 #endif

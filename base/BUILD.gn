@@ -176,6 +176,9 @@ static_library("base") {
 }
 
 source_set("superfasthash") {
-  sources = [ "hash/superfasthash.c" ]
+  sources = [
+    "hash/superfasthash.c",
+    "hash/pstdint.h",
+  ]
   visibility = [ ":base" ]
 }

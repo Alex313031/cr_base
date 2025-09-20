@@ -5,3 +5,7 @@
 group("mini_chromium") {
   deps = [ "base" ]
 }
+
+group("cr_base") {
+  public_deps = [ "base" ]
+}
